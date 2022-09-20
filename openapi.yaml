@@ -1,7 +1,7 @@
 # openapi2-run.yaml
 swagger: '2.0'
 info:
-  title: VISITOR_COUNTER
+  title: visitor-counter
   description: Visitor counter on API Gateway with a Cloud Run & Datastore backend
   version: 1.0.0
 schemes:
@@ -11,21 +11,6 @@ produces:
 x-google-backend:
   address: https://visitor-counter-qigs5azrda-nw.a.run.app/
 paths:
-  /assets/{asset}:
-    get:
-      parameters:
-        - in: path
-          name: asset
-          type: string
-          required: true
-          description: Name of the asset.
-      summary: Assets
-      operationId: getAsset
-      responses:
-        '200':
-          description: A successful response
-          schema:
-            type: string
   /hello:
     get:
       summary: Cloud Run hello world
@@ -35,3 +20,12 @@ paths:
           description: A successful response
           schema:
             type: string
+  /visits:
+    post:
+      summary: Visitor Count
+      operationId: visits
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: integer

@@ -22,7 +22,7 @@ def get_visits():
     return result[0]['count'] + 1
 
 
-@app.route('/visits', methods=['GET'])
+@app.route('/visits', methods=['POST'])
 def counter():
 
     visits = get_visits()
@@ -31,6 +31,9 @@ def counter():
 
     return format(visits)
 
+@app.route('/hello', methods=['GET'])
+def hiya():
+    return "<p>Hello!</p>"
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
