@@ -1,5 +1,3 @@
-import os
-
 from flask import Flask
 
 app = Flask(__name__)
@@ -24,10 +22,9 @@ def get_visits():
     return result[0]['count'] + 1
 
 
-@app.route('/')
-def root():
+@app.route('/visits', methods=['GET'])
+def counter():
 
-    # Get number of visitors + 1
     visits = get_visits()
 
     set_visits(visits)
