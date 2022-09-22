@@ -11,15 +11,6 @@ produces:
 x-google-backend:
   address: https://visitor-counter-qigs5azrda-nw.a.run.app/
 paths:
-  /hello:
-    get:
-      summary: Cloud Run hello world
-      operationId: hello
-      responses:
-        '200':
-          description: A successful response
-          schema:
-            type: string
   /visits:
     post:
       summary: Visitor Count

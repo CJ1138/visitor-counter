@@ -6,6 +6,12 @@ from google.cloud import datastore
 
 datastore_client = datastore.Client()
 
+def get_visits():
+    query = datastore_client.query(kind='analytics')
+    result = list(query.fetch())
+
+    return result[0]['count'] + 1
+
 def set_visits(visits):
     entity = datastore.Entity(key=datastore_client.key('analytics', 'visitors'))
     entity.update({
@@ -13,14 +19,6 @@ def set_visits(visits):
     })
 
     datastore_client.put(entity)
-
-
-def get_visits():
-    query = datastore_client.query(kind='analytics')
-    result = list(query.fetch())
-
-    return result[0]['count'] + 1
-
 
 @app.route('/visits', methods=['POST'])
 def counter():
@@ -30,10 +28,6 @@ def counter():
     set_visits(visits)
 
     return format(visits)
-
-@app.route('/hello', methods=['GET'])
-def hiya():
-    return "<p>Hello!</p>"
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
