@@ -9,6 +9,7 @@ permissions:
   contents: 'read'
   id-token: 'write'
 
+jobs:
   tf_plan:
     runs-on: ubuntu-latest
     steps:
