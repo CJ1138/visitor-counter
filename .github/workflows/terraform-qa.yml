@@ -35,6 +35,6 @@ jobs:
 
       - id: tf_apply
         name: Terraform apply
-        run: terraform apply
+        run: terraform apply -auto-approve -input=false
         env: 
           GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
