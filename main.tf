@@ -85,7 +85,7 @@ resource "google_project_service" "enable_vc_api" {
   service = "visitor-counter-0zrx04ynqpirh.apigateway.visitor-counter-api.cloud.goog"
 }
 
-/*resource "google_apikeys_key" "vc_api_key" {
+resource "google_apikeys_key" "vc_api_key" {
   provider   = google-beta
   name         = "vc-api-key"
   display_name = "Key for the Visitor Counter API"
@@ -95,7 +95,7 @@ resource "google_project_service" "enable_vc_api" {
             service = "visitor-counter-0zrx04ynqpirh.apigateway.visitor-counter-api.cloud.goog"
         }
   }
-}*/
+}
 
 ##Workload Identity Federation
 
