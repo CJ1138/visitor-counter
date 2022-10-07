@@ -1,0 +1,34 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+    - dev
+
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
+jobs:
+  tf_plan:
+    runs-on: ubuntu-latest
+    steps:
+      - id: checkout
+        name: Checkout repo
+        uses: actions/checkout@v2
+
+      - id: set_up_terraform
+        name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+      
+      - id: tf_init
+        name: Terraform init
+        run: terraform init
+        env: 
+          GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
+
+      - id: tf_plan
+        name: Terraform plan
+        run: terraform plan
+        env: 
+          GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
