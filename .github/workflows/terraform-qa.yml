@@ -33,7 +33,7 @@ jobs:
         env: 
           GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
 
-       - id: tf_apply
+      - id: tf_apply
         name: Terraform apply
         run: terraform apply
         env: 
