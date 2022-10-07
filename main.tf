@@ -17,6 +17,16 @@ resource "google_project_service" "serviceusage" {
   disable_dependent_services = true
 }
 
+resource "google_project_service" "gcp_resource_manager_api" {
+  project = "visitor-counter-qa"
+  service = "cloudresourcemanager.googleapis.com"
+}
+
+resource "google_project_service" "iam_api" {
+  project = "visitor-counter-qa"
+  service = "iam.googleapis.com"
+}
+
 resource "google_project_service" "datastore" {
   project = "visitor-counter-qa"
   service = "datastore.googleapis.com"
