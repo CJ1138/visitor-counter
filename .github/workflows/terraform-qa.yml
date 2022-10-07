@@ -32,3 +32,9 @@ jobs:
         run: terraform plan
         env: 
           GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
+
+       - id: tf_apply
+        name: Terraform apply
+        run: terraform apply
+        env: 
+          GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
