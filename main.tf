@@ -37,6 +37,11 @@ resource "google_project_service" "artifact_registry" {
   service = "artifactregistry.googleapis.com"
 }
 
+resource "google_project_service" "container_registry" {
+  project = "visitor-counter-qa"
+  service = "containerregistry.googleapis.com"
+}
+
 resource "google_project_service" "api_gateway" {
   project = "visitor-counter-qa"
   service = "apigateway.googleapis.com"
