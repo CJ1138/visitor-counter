@@ -73,7 +73,7 @@ jobs:
 
       - id: update-cloud-run
         name: Update Cloud Run container
-        run: gcloud run deploy visitor-counter --image europe-west2-docker.pkg.dev/visitor-counter-qa/visitor-counter/visitor-counter:latest 
+        run: gcloud run deploy visitor-counter --image europe-west2-docker.pkg.dev/visitor-counter-qa/visitor-counter/visitor-counter:latest --region=europe-west2
 
  # test:
  #   runs-on: ubuntu-latest
