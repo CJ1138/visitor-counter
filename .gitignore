@@ -11,7 +11,7 @@ cypress/fixtures/users.json
 env
 .DS_Store
 
-crc-prod-site-73c64b898706.json
+visitor-counter-qa-1c59151f64a6.json
 
 # Local .terraform directories
 **/.terraform/*
