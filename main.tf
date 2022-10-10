@@ -1,3 +1,5 @@
+#TODO - Lockdown access to Cloud Run service to only API Gateway (currently public)
+
 #Setup GCP Provider
 provider "google" {
   project = "visitor-counter-qa"
@@ -6,8 +8,8 @@ provider "google" {
 
 provider "google-beta" {
   credentials = "visitor-counter-qa-1c59151f64a6.json"
-  project = "visitor-counter-qa"
-  region  = "europe-west2"
+  project     = "visitor-counter-qa"
+  region      = "europe-west2"
 }
 
 #Enable required APIs
@@ -30,6 +32,11 @@ resource "google_project_service" "iam_api" {
 resource "google_project_service" "datastore" {
   project = "visitor-counter-qa"
   service = "datastore.googleapis.com"
+}
+
+resource "google_project_service" "cloud-run" {
+  project = "visitor-counter-qa"
+  service = "run.googleapis.com"
 }
 
 resource "google_project_service" "artifact_registry" {
@@ -63,15 +70,15 @@ resource "google_api_gateway_api" "vc_api" {
   api_id   = "visitor-counter-api"
 }
 
-resource "google_api_gateway_api_config" "counter_gw" {
+resource "google_api_gateway_api_config" "counter_gwv2" {
   provider      = google-beta
   api           = google_api_gateway_api.vc_api.api_id
-  api_config_id = "config"
+  api_config_id = "configv2"
 
   openapi_documents {
     document {
-      path     = "openapi.yaml"
-      contents = filebase64("openapi.yaml")
+      path     = "api-configs/qa-config.yaml"
+      contents = filebase64("api-configs/qa-config.yaml")
     }
   }
   lifecycle {
@@ -81,29 +88,28 @@ resource "google_api_gateway_api_config" "counter_gw" {
 
 resource "google_api_gateway_gateway" "api_gw" {
   provider   = google-beta
-  api_config = "projects/300165146813/locations/global/apis/visitor-counter-api/configs/config"
+  api_config = "projects/300165146813/locations/global/apis/visitor-counter-api/configs/configv2"
   gateway_id = "vc-api-gw"
 }
 
 resource "google_project_service" "enable_vc_api" {
   project = "visitor-counter-qa"
-  service = "visitor-counter-0zrx04ynqpirh.apigateway.visitor-counter-api.cloud.goog"
+  service = "visitor-counter-api-2tede7yicnc9f.apigateway.visitor-counter-qa.cloud.goog"
 }
 
 resource "google_apikeys_key" "vc_api_key" {
-  provider   = google-beta
+  provider     = google-beta
   name         = "vc-api-key"
   display_name = "Key for the Visitor Counter API"
 
   restrictions {
-        api_targets {
-            service = "visitor-counter-0zrx04ynqpirh.apigateway.visitor-counter-api.cloud.goog"
-        }
+    api_targets {
+      service = "visitor-counter-api-2tede7yicnc9f.apigateway.visitor-counter-qa.cloud.goog"
+    }
   }
 }
 
-##Workload Identity Federation
-
+#Workload Identity Federation
 resource "google_iam_workload_identity_pool" "counter-wi-pool" {
   workload_identity_pool_id = "counter-wi-pool"
   display_name              = "Visitor Counter WI Pool"
@@ -157,8 +163,43 @@ resource "google_project_iam_member" "cloud_asset_owner" {
   member  = "serviceAccount:github-actions-runner@visitor-counter-qa.iam.gserviceaccount.com"
 }
 
-# Adding Terraform remote bucket
+#Cloud Run deploy
+resource "google_cloud_run_service" "visitor-counter" {
+  name     = "visitor-counter"
+  location = "europe-west2"
 
+  metadata {
+    annotations = {
+      "run.googleapis.com/client-name" = "terraform"
+    }
+  }
+  
+  template {
+    spec {
+      containers {
+        image = "europe-west2-docker.pkg.dev/visitor-counter-qa/visitor-counter/visitor-counter:latest"
+      }
+    }
+  }
+}
+
+data "google_iam_policy" "noauth" {
+  binding {
+    role    = "roles/run.invoker"
+    members = ["allUsers"]
+  }
+}
+
+resource "google_cloud_run_service_iam_policy" "noauth" {
+  location = google_cloud_run_service.visitor-counter.location
+  project  = google_cloud_run_service.visitor-counter.project
+  service  = google_cloud_run_service.visitor-counter.name
+
+  policy_data = data.google_iam_policy.noauth.policy_data
+  
+}
+
+# Adding Terraform remote bucket
 resource "google_storage_bucket" "default" {
   name          = "vc-qa-7968b717b2a4-bucket-tfstate"
   force_destroy = false

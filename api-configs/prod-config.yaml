@@ -1,0 +1,30 @@
+# openapi2-run.yaml
+swagger: '2.0'
+info:
+  title: visitor-counter
+  description: Visitor counter on API Gateway with a Cloud Run & Datastore backend
+  version: 1.0.0
+schemes:
+- https
+produces:
+- application/json
+x-google-backend:
+  address: https://visitor-counter-qigs5azrda-nw.a.run.app/
+paths:
+  /visits:
+    post:
+      summary: Visitor Count
+      operationId: visits
+      security:
+      - api_key: []
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: integer
+securityDefinitions:
+  # This section configures basic authentication with an API key.
+  api_key:
+    type: "apiKey"
+    name: "key"
+    in: "query"

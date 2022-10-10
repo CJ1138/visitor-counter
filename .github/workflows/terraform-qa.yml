@@ -10,7 +10,25 @@ permissions:
   id-token: 'write'
 
 jobs:
-  tf_plan:
+  build:
+    runs-on: ubuntu-latest
+    steps:  
+      - id: checkout
+        name: Checkout repo
+        uses: actions/checkout@v2
+      - run: docker build . -t europe-west2-docker.pkg.dev/visitor-counter-qa/visitor-counter/visitor-counter:latest   
+
+
+#  artifact:
+#    runs-on: ubuntu-latest
+#    steps:  
+#      - id: checkout
+#        name: Checkout repo
+#        uses: actions/checkout@v2
+  
+
+
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - id: checkout
@@ -32,3 +50,10 @@ jobs:
         run: terraform plan
         env: 
           GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
+
+ # test:
+ #   runs-on: ubuntu-latest
+ #   steps:
+ #     - id: checkout
+ #       name: Checkout repo
+ #       uses: actions/checkout@v2

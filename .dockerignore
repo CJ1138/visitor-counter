@@ -6,3 +6,11 @@ README.md
 __pycache__
 .pytest_cache
 openapi.yaml
+.terraform
+.terraform.lock.hcl
+.vscode
+docker
+main.tf
+backend.tf
+.github
+.gitignore
