@@ -54,9 +54,9 @@ jobs:
         env: 
           GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
 
-      - id: tf_plan
-        name: Terraform plan
-        run: terraform plan
+      - id: tf_apply
+        name: Terraform apply
+        run: terraform apply -auto-approve -input=false
         env: 
           GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
 
