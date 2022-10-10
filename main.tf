@@ -7,7 +7,6 @@ provider "google" {
 }
 
 provider "google-beta" {
-  credentials = "visitor-counter-qa-1c59151f64a6.json"
   project     = "visitor-counter-qa"
   region      = "europe-west2"
 }
