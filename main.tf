@@ -133,7 +133,7 @@ resource "google_service_account_iam_binding" "service-account-iam" {
   service_account_id = "projects/visitor-counter-qa/serviceAccounts/github-actions-runner@visitor-counter-qa.iam.gserviceaccount.com"
   role               = "roles/iam.workloadIdentityUser"
   members = [
-    "principalSet://iam.googleapis.com/projects/300165146813/locations/global/workloadIdentityPools/counter-wi-pool/attribute.repository/CJ1138/crc"
+    "principalSet://iam.googleapis.com/projects/300165146813/locations/global/workloadIdentityPools/counter-wi-pool/attribute.repository/CJ1138/visitor-counter"
   ]
   depends_on = [
     google_service_account.gh_actions_account
