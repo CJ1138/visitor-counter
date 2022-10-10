@@ -75,9 +75,21 @@ jobs:
         name: Update Cloud Run container
         run: gcloud run deploy visitor-counter --image europe-west2-docker.pkg.dev/visitor-counter-qa/visitor-counter/visitor-counter:latest --region=europe-west2
 
- # test:
- #   runs-on: ubuntu-latest
- #   steps:
- #     - id: checkout
- #       name: Checkout repo
- #       uses: actions/checkout@v2
+  qa_tests:
+    needs: [update_site]
+    runs-on: ubuntu-latest
+    env:
+        cypress_resume_page: https://chrisjohnson.tech
+    steps:
+    - id: checkout
+      name: Checkout repo
+      uses: actions/checkout@v2
+
+    - id: live-page-test
+      name: Test site in production
+      uses: cypress-io/github-action@v4
+      env:
+        CYPRESS_resume_site: 'http://chrisjohnson.tech'
+      with:
+        spec: ${{ github.workspace }}/cypress/e2e/page_content.cy.js
+        browser: chrome
