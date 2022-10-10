@@ -68,12 +68,12 @@ jobs:
           service_account: 'github-actions-runner@visitor-counter-qa.iam.gserviceaccount.com'
 
       - id: setup-gcloud
-      name: Setup gcloud
-      uses: google-github-actions/setup-gcloud@v0
+        name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v0
 
       - id: update-cloud-run
-      name: Update Cloud Run container
-      run: gcloud run deploy visitor-counter --image europe-west2-docker.pkg.dev/visitor-counter-qa/visitor-counter/visitor-counter:latest 
+        name: Update Cloud Run container
+        run: gcloud run deploy visitor-counter --image europe-west2-docker.pkg.dev/visitor-counter-qa/visitor-counter/visitor-counter:latest 
 
  # test:
  #   runs-on: ubuntu-latest
