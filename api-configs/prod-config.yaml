@@ -9,7 +9,7 @@ schemes:
 produces:
 - application/json
 x-google-backend:
-  address: https://visitor-counter-qigs5azrda-nw.a.run.app/
+  address: https://visitor-counter-h32b63mqnq-nw.a.run.app
 paths:
   /visits:
     post:
