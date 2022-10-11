@@ -12,6 +12,7 @@ env
 .DS_Store
 
 visitor-counter-qa-1c59151f64a6.json
+visitor-counter-prod-094a3bc3714c.json
 
 # Local .terraform directories
 **/.terraform/*
@@ -47,3 +48,4 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+

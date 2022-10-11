@@ -51,8 +51,13 @@ jobs:
       - id: tf_init
         name: Terraform init
         run: terraform init
-        env: 
+        env:
+          TF_WORKSPACE: "default"
           GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
+      
+      - name: Terraform Workspace
+        id: workspace
+        run: terraform workspace select default
       
       - name: Terraform format
         id: fmt
@@ -60,7 +65,7 @@ jobs:
 
       - id: tf_apply
         name: Terraform apply
-        run: terraform apply -var-file=”${{ github.workspace }}/qa.tfvars” -auto-approve -input=false
+        run: terraform plan -var-file=”${{ github.workspace }}/qa.tfvars” -auto-approve -input=false
         env: 
           GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
       

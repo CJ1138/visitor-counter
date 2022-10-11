@@ -6,6 +6,7 @@ provider "google" {
 
 provider "google-beta" {
   project = var.gcp_project
+  credentials = var.gcp_creds
   region  = "europe-west2"
 }
 
@@ -67,15 +68,15 @@ resource "google_api_gateway_api" "vc_api" {
   api_id   = "visitor-counter-api"
 }
 
-resource "google_api_gateway_api_config" "counter_gwv2" {
+resource "google_api_gateway_api_config" "counter_gwv3" {
   provider      = google-beta
   api           = google_api_gateway_api.vc_api.api_id
-  api_config_id = "configv2"
+  api_config_id = "configv3"
 
   openapi_documents {
     document {
-      path     = "api-configs/qa-config.yaml"
-      contents = filebase64("api-configs/qa-config.yaml")
+      path     = "api-configs/${var.api_config}"
+      contents = filebase64("api-configs/${var.api_config}")
     }
   }
   lifecycle {
@@ -85,13 +86,13 @@ resource "google_api_gateway_api_config" "counter_gwv2" {
 
 resource "google_api_gateway_gateway" "api_gw" {
   provider   = google-beta
-  api_config = "projects/300165146813/locations/global/apis/visitor-counter-api/configs/configv2"
+  api_config = google_api_gateway_api_config.counter_gwv3.id
   gateway_id = "vc-api-gw"
 }
 
 resource "google_project_service" "enable_vc_api" {
   project = var.gcp_project
-  service = "visitor-counter-api-2tede7yicnc9f.apigateway.visitor-counter-qa.cloud.goog"
+  service = var.vc_api_service
 }
 
 
@@ -102,7 +103,7 @@ resource "google_apikeys_key" "vc_api_key" {
 
   restrictions {
     api_targets {
-      service = "visitor-counter-api-2tede7yicnc9f.apigateway.visitor-counter-qa.cloud.goog"
+      service = var.vc_api_service
     }
   }
 }
@@ -128,10 +129,10 @@ resource "google_iam_workload_identity_pool_provider" "github_wi_provider" {
 }
 
 resource "google_service_account_iam_binding" "service-account-iam" {
-  service_account_id = "projects/visitor-counter-qa/serviceAccounts/github-actions-runner@visitor-counter-qa.iam.gserviceaccount.com"
+  service_account_id = google_service_account.gh_actions_account.id
   role               = "roles/iam.workloadIdentityUser"
   members = [
-    "principalSet://iam.googleapis.com/projects/300165146813/locations/global/workloadIdentityPools/counter-wi-pool/attribute.repository/CJ1138/visitor-counter"
+    var.wif_repo
   ]
   depends_on = [
     google_service_account.gh_actions_account
@@ -152,13 +153,13 @@ resource "google_service_account" "tf_service_account" {
 resource "google_project_iam_member" "tf_editor" {
   project = var.gcp_project
   role    = "roles/editor"
-  member  = "serviceAccount:terraform-service-account@visitor-counter-qa.iam.gserviceaccount.com"
+  member  = "serviceAccount:terraform-service-account@${var.gcp_project}.iam.gserviceaccount.com"
 }
 
 resource "google_project_iam_member" "cloud_asset_owner" {
   project = var.gcp_project
   role    = "roles/cloudasset.owner"
-  member  = "serviceAccount:github-actions-runner@visitor-counter-qa.iam.gserviceaccount.com"
+  member  = "serviceAccount:github-actions-runner@${var.gcp_project}.iam.gserviceaccount.com"
 }
 
 #Cloud Run deploy
@@ -175,7 +176,7 @@ resource "google_cloud_run_service" "visitor-counter" {
   template {
     spec {
       containers {
-        image = "europe-west2-docker.pkg.dev/visitor-counter-qa/visitor-counter/visitor-counter:latest"
+        image = "europe-west2-docker.pkg.dev/${var.gcp_project}/visitor-counter/visitor-counter:latest"
       }
     }
   }
@@ -199,7 +200,7 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
 
 # Adding Terraform remote bucket
 resource "google_storage_bucket" "default" {
-  name          = "vc-qa-7968b717b2a4-bucket-tfstate"
+  name          = var.backend
   force_destroy = false
   location      = "EU"
   storage_class = "STANDARD"

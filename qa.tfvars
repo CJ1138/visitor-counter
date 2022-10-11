@@ -1,1 +1,6 @@
 gcp_project = "visitor-counter-qa"
+vc_api_service = "visitor-counter-api-2tede7yicnc9f.apigateway.visitor-counter-qa.cloud.goog"
+wif_repo = "principalSet://iam.googleapis.com/projects/300165146813/locations/global/workloadIdentityPools/counter-wi-pool/attribute.repository/CJ1138/visitor-counter"
+gcp_creds = "visitor-counter-qa-1c59151f64a6.json"
+backend = "vc-qa-7968b717b2a4-bucket-tfstate"
+api_config = "qa-config.yaml"

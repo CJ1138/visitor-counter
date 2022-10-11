@@ -25,7 +25,8 @@ jobs:
       - id: tf_init
         name: Terraform init
         run: terraform init
-        env: 
+        env:
+          TF_WORKSPACE: "prod"
           GOOGLE_CREDENTIALS: ${{ secrets.VC_PROD_GCP_CREDS }}
 
       - name: Terraform Format
