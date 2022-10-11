@@ -43,6 +43,13 @@ jobs:
       - id: checkout
         name: Checkout repo
         uses: actions/checkout@v3
+      
+      - id: auth_gcp
+        name: Authorise with GCP project
+        uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: 'projects/300165146813/locations/global/workloadIdentityPools/counter-wi-pool/providers/github-provider'
+          service_account: 'github-actions-runner@visitor-counter-qa.iam.gserviceaccount.com'
 
       - id: set_up_terraform
         name: Set up Terraform
@@ -68,14 +75,7 @@ jobs:
         run: terraform plan -var-file=”${{ github.workspace }}/qa.tfvars” -auto-approve -input=false
         env: 
           GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
-      
-      - id: auth_gcp
-        name: Authorise with GCP project
-        uses: google-github-actions/auth@v0
-        with:
-          workload_identity_provider: 'projects/300165146813/locations/global/workloadIdentityPools/counter-wi-pool/providers/github-provider'
-          service_account: 'github-actions-runner@visitor-counter-qa.iam.gserviceaccount.com'
-
+          
       - id: setup-gcloud
         name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v0
