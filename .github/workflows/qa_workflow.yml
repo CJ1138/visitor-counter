@@ -1,4 +1,4 @@
-name: Deploy to Production
+name: Deploy to QA and Test
 
 on:
   push:
@@ -93,3 +93,19 @@ jobs:
       with:
         spec: ${{ github.workspace }}/cypress/e2e/spec.cy.js
         browser: chrome
+
+  create_pr:
+    needs: [qa_tests]
+    runs-on: ubuntu-latest
+    env:
+        cypress_resume_page: https://chrisjohnson.tech
+    steps:
+    - id: checkout
+      name: Checkout repo
+      uses: actions/checkout@v2
+
+    - id: create-pr
+      name: Create pull request
+      run: gh pr create -B main -H dev --title 'Merge dev into main' --body 'Created by Github action'
+      env:
+        GITHUB_TOKEN: ${{ secrets.PR_TOKEN }}
