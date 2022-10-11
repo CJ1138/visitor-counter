@@ -43,9 +43,6 @@ jobs:
       - id: checkout
         name: Checkout repo
         uses: actions/checkout@v3
-
-      - run: cd ${{ github.workspace }}
-      - run: ls
       
       - id: auth_gcp
         name: Authorise with GCP project
@@ -71,7 +68,7 @@ jobs:
 
       - id: tf_apply
         name: Terraform apply
-        run: terraform plan -var-file=”qa.tfvars”
+        run: terraform plan -var-file=”${{ github.workspace }}/qa.tfvars”
         env: 
           GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
 
