@@ -43,7 +43,7 @@ jobs:
       - name: Terraform Plan
         id: plan
         if: github.event_name == 'pull_request'
-        run: terraform plan -var-file=${{ github.workspace }}/qa.tfvars -no-color -input=false
+        run: terraform plan -var-file=${{ github.workspace }}/prod.tfvars -no-color -input=false
         continue-on-error: true
 
       - name: Update Pull Request
@@ -83,7 +83,7 @@ jobs:
       - id: tf_apply
         name: Terraform apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -var-file=${{ github.workspace }}/qa.tfvars -auto-approve -input=false
+        run: terraform apply -var-file=${{ github.workspace }}/prod.tfvars -auto-approve -input=false
         env: 
           GOOGLE_CREDENTIALS: ${{ secrets.VC_PROD_GCP_CREDS }}
 
