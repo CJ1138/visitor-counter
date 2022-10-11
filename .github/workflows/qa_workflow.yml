@@ -15,7 +15,7 @@ jobs:
     steps:  
       - id: checkout
         name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       
       - id: build
         name: Build container
@@ -42,7 +42,7 @@ jobs:
     steps:
       - id: checkout
         name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - id: set_up_terraform
         name: Set up Terraform
@@ -53,10 +53,18 @@ jobs:
         run: terraform init
         env: 
           GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
+      
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
 
       - id: tf_apply
         name: Terraform apply
-        run: terraform apply -auto-approve -input=false
+        run: terraform apply -var-file=”qa.tfvars” -auto-approve -input=false
         env: 
           GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
       
@@ -83,7 +91,7 @@ jobs:
     steps:
     - id: checkout
       name: Checkout repo
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - id: live-page-test
       name: Test site in production
@@ -97,12 +105,10 @@ jobs:
   create_pr:
     needs: [qa_tests]
     runs-on: ubuntu-latest
-    env:
-        cypress_resume_page: https://chrisjohnson.tech
     steps:
     - id: checkout
       name: Checkout repo
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - id: create-pr
       name: Create pull request

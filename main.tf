@@ -1,65 +1,63 @@
-#TODO - Lockdown access to Cloud Run service to only API Gateway (currently public)
-
 #Setup GCP Provider
 provider "google" {
-  project = "visitor-counter-qa"
+  project = gcp_project
   region  = "europe-west2"
 }
 
 provider "google-beta" {
-  project     = "visitor-counter-qa"
-  region      = "europe-west2"
+  project = gcp_project
+  region  = "europe-west2"
 }
 
 #Enable required APIs
 resource "google_project_service" "serviceusage" {
-  project                    = "visitor-counter-qa"
+  project                    = gcp_project
   service                    = "serviceusage.googleapis.com"
   disable_dependent_services = true
 }
 
 resource "google_project_service" "gcp_resource_manager_api" {
-  project = "visitor-counter-qa"
+  project = gcp_project
   service = "cloudresourcemanager.googleapis.com"
 }
 
 resource "google_project_service" "iam_api" {
-  project = "visitor-counter-qa"
+  project = gcp_project
   service = "iam.googleapis.com"
 }
 
 resource "google_project_service" "datastore" {
-  project = "visitor-counter-qa"
+  project = gcp_project
   service = "datastore.googleapis.com"
 }
 
 resource "google_project_service" "cloud-run" {
-  project = "visitor-counter-qa"
+  project = gcp_project
   service = "run.googleapis.com"
 }
 
 resource "google_project_service" "artifact_registry" {
-  project = "visitor-counter-qa"
+  project = gcp_project
   service = "artifactregistry.googleapis.com"
 }
 
 resource "google_project_service" "container_registry" {
-  project = "visitor-counter-qa"
+  project = gcp_project
   service = "containerregistry.googleapis.com"
 }
 
 resource "google_project_service" "api_gateway" {
-  project = "visitor-counter-qa"
+  project = gcp_project
   service = "apigateway.googleapis.com"
 }
 
 resource "google_project_service" "cloud_asset" {
-  project = "visitor-counter-qa"
+  project = gcp_project
   service = "cloudasset.googleapis.com"
 }
 
 resource "google_project_service" "service_control" {
-  project = "visitor-counter-qa"
+  project = gcp_project
   service = "servicecontrol.googleapis.com"
 }
 
@@ -92,9 +90,10 @@ resource "google_api_gateway_gateway" "api_gw" {
 }
 
 resource "google_project_service" "enable_vc_api" {
-  project = "visitor-counter-qa"
+  project = gcp_project
   service = "visitor-counter-api-2tede7yicnc9f.apigateway.visitor-counter-qa.cloud.goog"
 }
+
 
 resource "google_apikeys_key" "vc_api_key" {
   provider     = google-beta
@@ -151,13 +150,13 @@ resource "google_service_account" "tf_service_account" {
 }
 
 resource "google_project_iam_member" "tf_editor" {
-  project = "visitor-counter-qa"
+  project = gcp_project
   role    = "roles/editor"
   member  = "serviceAccount:terraform-service-account@visitor-counter-qa.iam.gserviceaccount.com"
 }
 
 resource "google_project_iam_member" "cloud_asset_owner" {
-  project = "visitor-counter-qa"
+  project = gcp_project
   role    = "roles/cloudasset.owner"
   member  = "serviceAccount:github-actions-runner@visitor-counter-qa.iam.gserviceaccount.com"
 }
@@ -172,7 +171,7 @@ resource "google_cloud_run_service" "visitor-counter" {
       "run.googleapis.com/client-name" = "terraform"
     }
   }
-  
+
   template {
     spec {
       containers {
@@ -195,7 +194,7 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
   service  = google_cloud_run_service.visitor-counter.name
 
   policy_data = data.google_iam_policy.noauth.policy_data
-  
+
 }
 
 # Adding Terraform remote bucket

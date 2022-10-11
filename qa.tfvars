@@ -1,0 +1,1 @@
+gcp_project = "visitor-counter-qa"
