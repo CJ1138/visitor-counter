@@ -43,6 +43,9 @@ jobs:
       - id: checkout
         name: Checkout repo
         uses: actions/checkout@v3
+
+      - run: cd ${{ github.workspace }}
+      - run: ls
       
       - id: auth_gcp
         name: Authorise with GCP project
