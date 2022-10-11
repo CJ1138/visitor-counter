@@ -17,6 +17,13 @@ jobs:
       - id: checkout
         name: Checkout repo
         uses: actions/checkout@v2
+      
+      - id: auth_gcp
+        name: Authorise with GCP project
+        uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: 'projects/300165146813/locations/global/workloadIdentityPools/counter-wi-pool/providers/github-provider'
+          service_account: 'github-actions-runner@visitor-counter-qa.iam.gserviceaccount.com'
 
       - id: set_up_terraform
         name: Set up Terraform
@@ -26,21 +33,17 @@ jobs:
         name: Terraform init
         run: terraform init
         env:
-          TF_WORKSPACE: "prod"
+          TF_WORKSPACE: "PROD"
           GOOGLE_CREDENTIALS: ${{ secrets.VC_PROD_GCP_CREDS }}
-
-      - name: Terraform Format
-        id: fmt
-        run: terraform fmt -check
-
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate -no-color
+          
+      - name: Terraform Workspace
+        id: workspace
+        run: terraform workspace select PROD
 
       - name: Terraform Plan
         id: plan
         if: github.event_name == 'pull_request'
-        run: terraform plan -no-color -input=false
+        run: terraform plan -var-file=${{ github.workspace }}/qa.tfvars -no-color -input=false
         continue-on-error: true
 
       - name: Update Pull Request
@@ -80,7 +83,7 @@ jobs:
       - id: tf_apply
         name: Terraform apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve -input=false
+        run: terraform apply -var-file=${{ github.workspace }}/qa.tfvars -auto-approve -input=false
         env: 
           GOOGLE_CREDENTIALS: ${{ secrets.VC_PROD_GCP_CREDS }}
 
@@ -94,14 +97,14 @@ jobs:
       
       - id: build
         name: Build container
-        run: docker build . -t europe-west2-docker.pkg.dev/visitor-counter-qa/visitor-counter/visitor-counter:latest
+        run: docker build . -t europe-west2-docker.pkg.dev/visitor-counter-prod/visitor-counter/visitor-counter:latest
 
       - id: auth_gcp
         name: Authorise with GCP project
         uses: google-github-actions/auth@v0
         with:
-          workload_identity_provider: 'projects/300165146813/locations/global/workloadIdentityPools/counter-wi-pool/providers/github-provider'
-          service_account: 'github-actions-runner@visitor-counter-qa.iam.gserviceaccount.com'
+          workload_identity_provider: 'projects/860934251761/locations/global/workloadIdentityPools/counter-wi-pool/providers/github-provider'
+          service_account: 'github-actions-runner@visitor-counter-prod.iam.gserviceaccount.com'
 
       - id: auth_artifact_registry
         name: Authorise with Artifact Registry
@@ -119,8 +122,8 @@ jobs:
         name: Authorise with GCP project
         uses: google-github-actions/auth@v0
         with:
-          workload_identity_provider: 'projects/300165146813/locations/global/workloadIdentityPools/counter-wi-pool/providers/github-provider'
-          service_account: 'github-actions-runner@visitor-counter-qa.iam.gserviceaccount.com'
+          workload_identity_provider: 'projects/860934251761/locations/global/workloadIdentityPools/counter-wi-pool/providers/github-provider'
+          service_account: 'github-actions-runner@visitor-counter-prod.iam.gserviceaccount.com'
 
       - id: setup-gcloud
         name: Setup gcloud
@@ -128,7 +131,7 @@ jobs:
 
       - id: update-cloud-run
         name: Update Cloud Run container
-        run: gcloud run deploy visitor-counter --image europe-west2-docker.pkg.dev/visitor-counter-qa/visitor-counter/visitor-counter:latest --region=europe-west2
+        run: gcloud run deploy visitor-counter --image europe-west2-docker.pkg.dev/visitor-counter-prod/visitor-counter/visitor-counter:latest --region=europe-west2
 
   qa_tests:
     needs: [deploy]
