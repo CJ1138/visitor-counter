@@ -6,7 +6,7 @@ provider "google" {
 
 provider "google-beta" {
   project = var.gcp_project
-  credentials = var.gcp_creds
+  #credentials = var.gcp_creds
   region  = "europe-west2"
 }
 
