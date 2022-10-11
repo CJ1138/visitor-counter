@@ -65,17 +65,13 @@ jobs:
       - name: Terraform Workspace
         id: workspace
         run: terraform workspace select default
-      
-      - name: Terraform format
-        id: fmt
-        run: terraform fmt -check
 
       - id: tf_apply
         name: Terraform apply
         run: terraform plan -var-file=”${{ github.workspace }}/qa.tfvars” -auto-approve -input=false
         env: 
           GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
-          
+
       - id: setup-gcloud
         name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v0
