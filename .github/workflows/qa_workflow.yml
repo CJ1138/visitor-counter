@@ -58,10 +58,6 @@ jobs:
         id: fmt
         run: terraform fmt -check
 
-      - name: Terraform validate
-        id: validate
-        run: terraform validate -var-file=”qa.tfvars” -no-color
-
       - id: tf_apply
         name: Terraform apply
         run: terraform apply -var-file=”qa.tfvars” -auto-approve -input=false
