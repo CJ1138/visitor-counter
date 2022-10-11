@@ -60,7 +60,7 @@ jobs:
 
       - id: tf_apply
         name: Terraform apply
-        run: terraform apply -var-file=”qa.tfvars” -auto-approve -input=false
+        run: terraform apply -var-file=”${{ github.workspace }}/qa.tfvars” -auto-approve -input=false
         env: 
           GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
       
