@@ -54,13 +54,13 @@ jobs:
         env: 
           GOOGLE_CREDENTIALS: ${{ secrets.VC_QA_GCP_CREDS }}
       
-      - name: Terraform Format
+      - name: Terraform format
         id: fmt
         run: terraform fmt -check
 
-      - name: Terraform Validate
+      - name: Terraform validate
         id: validate
-        run: terraform validate -no-color
+        run: terraform validate -var-file=”qa.tfvars” -no-color
 
       - id: tf_apply
         name: Terraform apply
