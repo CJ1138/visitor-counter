@@ -65,4 +65,27 @@ describe('Test API', () => {
       expect(response.status).to.eq(400)
     })
   })
+
+  it('Tries invalid route and fails (404)', () => {
+    cy.request({
+      method: 'POST', 
+      url: Cypress.env('API_URL') + '/home?key=' + Cypress.env('API_KEY'),
+      failOnStatusCode: false,
+    })
+      .then((response) => {
+      expect(response.status).to.eq(404)
+    })
+  })
+
+  it('Tries no route and fails (404)', () => {
+    cy.request({
+      method: 'POST', 
+      url: Cypress.env('API_URL') + '?key=' + Cypress.env('API_KEY'),
+      failOnStatusCode: false,
+    })
+      .then((response) => {
+      expect(response.status).to.eq(404)
+    })
+  })
+
 })
