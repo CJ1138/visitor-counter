@@ -137,18 +137,17 @@ jobs:
   qa_tests:
     needs: [deploy]
     runs-on: ubuntu-latest
-    env:
-        cypress_resume_page: https://chrisjohnson.tech
     steps:
     - id: checkout
       name: Checkout repo
       uses: actions/checkout@v2
 
-    - id: live-page-test
-      name: Test site in production
+    - id: prod_api_tests
+      name: Test API in producion
       uses: cypress-io/github-action@v4
       env:
-        CYPRESS_resume_site: 'http://chrisjohnson.tech'
+        CYPRESS_API_URL: ${{ secrets.PROD_API_URL }}
+        CYPRESS_API_KEY: ${{ secrets.PROD_API_KEY }}
       with:
-        spec: ${{ github.workspace }}/cypress/e2e/spec.cy.js
+        spec: ${{ github.workspace }}/cypress/e2e/api_test.cy.js
         browser: chrome
