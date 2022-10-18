@@ -16,13 +16,13 @@ jobs:
     steps:
       - id: checkout
         name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       
       - id: auth_gcp
         name: Authorise with GCP project
         uses: google-github-actions/auth@v0
         with:
-          workload_identity_provider: 'projects/860934251761/locations/global/workloadIdentityPools/counter-wi-pool/providers/github-provider'
+          workload_identity_provider: 'projects/${{ secrets.PROD_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/counter-wi-pool/providers/github-provider'
           service_account: 'github-actions-runner@visitor-counter-prod.iam.gserviceaccount.com'
 
       - id: set_up_terraform
@@ -101,8 +101,8 @@ jobs:
         name: Authorise with GCP project
         uses: google-github-actions/auth@v0
         with:
-          workload_identity_provider: 'projects/860934251761/locations/global/workloadIdentityPools/counter-wi-pool/providers/github-provider'
-          service_account: 'github-actions-runner@visitor-counter-prod.iam.gserviceaccount.com'
+          workload_identity_provider: 'projects/${{ secrets.PROD_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/counter-wi-pool/providers/github-provider'
+          service_account: 'github-actions-runner@${{ secrets.PROD_PROJECT_NAME }}.iam.gserviceaccount.com'
 
       - id: auth_artifact_registry
         name: Authorise with Artifact Registry
@@ -110,7 +110,7 @@ jobs:
 
       - id: push
         name: Push to Artifact Registry
-        run: docker push europe-west2-docker.pkg.dev/visitor-counter-prod/visitor-counter/visitor-counter
+        run: docker push europe-west2-docker.pkg.dev/${{ secrets.PROD_PROJECT_NAME }}/visitor-counter/visitor-counter
 
   deploy:
     needs: [build_and_artifact]
@@ -120,8 +120,8 @@ jobs:
         name: Authorise with GCP project
         uses: google-github-actions/auth@v0
         with:
-          workload_identity_provider: 'projects/860934251761/locations/global/workloadIdentityPools/counter-wi-pool/providers/github-provider'
-          service_account: 'github-actions-runner@visitor-counter-prod.iam.gserviceaccount.com'
+          workload_identity_provider: 'projects/${{ secrets.PROD_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/counter-wi-pool/providers/github-provider'
+          service_account: 'github-actions-runner@v${{ secrets.PROD_PROJECT_NAME }}.iam.gserviceaccount.com'
 
       - id: setup-gcloud
         name: Setup gcloud
@@ -129,7 +129,7 @@ jobs:
 
       - id: update-cloud-run
         name: Update Cloud Run container
-        run: gcloud run deploy visitor-counter --image europe-west2-docker.pkg.dev/visitor-counter-prod/visitor-counter/visitor-counter:latest --region=europe-west2
+        run: gcloud run deploy visitor-counter --image europe-west2-docker.pkg.dev/${{ secrets.PROD_PROJECT_NAME }}/visitor-counter/visitor-counter:latest --region=europe-west2
 
   qa_tests:
     needs: [deploy]
