@@ -121,7 +121,7 @@ jobs:
         uses: google-github-actions/auth@v0
         with:
           workload_identity_provider: 'projects/${{ secrets.PROD_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/counter-wi-pool/providers/github-provider'
-          service_account: 'github-actions-runner@v${{ secrets.PROD_PROJECT_NAME }}.iam.gserviceaccount.com'
+          service_account: 'github-actions-runner@${{ secrets.PROD_PROJECT_NAME }}.iam.gserviceaccount.com'
 
       - id: setup-gcloud
         name: Setup gcloud
